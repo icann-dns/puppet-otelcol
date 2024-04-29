@@ -18,6 +18,8 @@ describe 'otelcol' do
                                                                  'path' => '/etc/otelcol/config.yaml',
                                                                  'format' => 'yaml',
                                                                  'mode' => '0600',
+                                                                 'owner' => 'otelcol',
+                                                                 'group' => 'otelcol',
                                                                })
           is_expected.to contain_concat__fragment('otelcol-config-header')
           is_expected.to contain_concat__fragment('otelcol-config-baseconfig')
@@ -41,8 +43,6 @@ describe 'otelcol' do
         let :params do
           {
             package_name: 'otelcol-contrib',
-            config_file_owner: 'otelcol-contrib',
-            config_file_group: 'otelcol-contrib',
           }
         end
 
@@ -58,7 +58,14 @@ describe 'otelcol' do
         }
 
         it { # Validate vaild YAML for config
-          is_expected.to contain_concat('otelcol-config') # .with_content(configcontent.to_yaml)
+          is_expected.to contain_concat('otelcol-config').with({
+                                                                 'path' => '/etc/otelcol-contrib/config.yaml',
+                                                                 'format' => 'yaml',
+                                                                 'mode' => '0600',
+                                                                 'owner' => 'otelcol-contrib',
+                                                                 'group' => 'otelcol-contrib',
+                                                               })
+          # .with_content(configcontent.to_yaml)
           # yaml_object = YAML.load(catalogue.resource('file', 'otelcol-config').send(:parameters)[:content])
           # expect(yaml_object.length).to be > 0
         }
@@ -74,8 +81,6 @@ describe 'otelcol' do
           let :params do
             {
               package_name: 'otelcol-contrib',
-              config_file_owner: 'otelcol-contrib',
-              config_file_group: 'otelcol-contrib',
               manage_archive: true,
             }
           end
