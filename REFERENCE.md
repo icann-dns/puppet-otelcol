@@ -33,6 +33,11 @@
 ### Data types
 
 * [`Otelcol::Component::Name`](#Otelcol--Component--Name): Type for name of Otel Collector Ressources
+* [`Otelcol::Telemetry_exporter`](#Otelcol--Telemetry_exporter)
+* [`Otelcol::Telemetry_exporter::Periodic`](#Otelcol--Telemetry_exporter--Periodic)
+* [`Otelcol::Telemetry_exporter::Periodic::Otlp`](#Otelcol--Telemetry_exporter--Periodic--Otlp)
+* [`Otelcol::Telemetry_exporter::Pull`](#Otelcol--Telemetry_exporter--Pull)
+* [`Otelcol::Telemetry_exporter::Pull::Prometheus`](#Otelcol--Telemetry_exporter--Pull--Prometheus)
 
 ## Classes
 
@@ -62,11 +67,7 @@ The following parameters are available in the `otelcol` class:
 * [`extensions`](#-otelcol--extensions)
 * [`log_options`](#-otelcol--log_options)
 * [`metrics_level`](#-otelcol--metrics_level)
-* [`metrics_mode`](#-otelcol--metrics_mode)
-* [`metrics_prometheus_host`](#-otelcol--metrics_prometheus_host)
-* [`metrics_prometheus_port`](#-otelcol--metrics_prometheus_port)
-* [`metrics_otlp_endpoint`](#-otelcol--metrics_otlp_endpoint)
-* [`metrics_otlp_protocol`](#-otelcol--metrics_otlp_protocol)
+* [`telemetry_exporters`](#-otelcol--telemetry_exporters)
 * [`service_ensure`](#-otelcol--service_ensure)
 * [`service_enable`](#-otelcol--service_enable)
 * [`manage_service`](#-otelcol--manage_service)
@@ -222,45 +223,13 @@ Level for metrics config
 
 Default value: `'basic'`
 
-##### <a name="-otelcol--metrics_mode"></a>`metrics_mode`
+##### <a name="-otelcol--telemetry_exporters"></a>`telemetry_exporters`
 
-Data type: `Enum['pull','push']`
+Data type: `Array[Otelcol::Telemetry_exporter]`
 
-Mode for metrics config either pull or push
+Hash for telemetry exporters config.  Currently support pull prometheus and periodic with otlp
 
-Default value: `'pull'`
-
-##### <a name="-otelcol--metrics_prometheus_host"></a>`metrics_prometheus_host`
-
-Data type: `Stdlib::Host`
-
-Host for internal telemetry Prometheus metrics
-
-Default value: `'0.0.0.0'`
-
-##### <a name="-otelcol--metrics_prometheus_port"></a>`metrics_prometheus_port`
-
-Data type: `Stdlib::Port`
-
-Port for internal telemetry Prometheus metrics
-
-Default value: `8888`
-
-##### <a name="-otelcol--metrics_otlp_endpoint"></a>`metrics_otlp_endpoint`
-
-Data type: `Stdlib::HTTPSUrl`
-
-OTLP endpoint for internal telemetry metrics
-
-Default value: `'https://backend:4318'`
-
-##### <a name="-otelcol--metrics_otlp_protocol"></a>`metrics_otlp_protocol`
-
-Data type: `String[1]`
-
-OTLP protocol for internal telemetry metrics
-
-Default value: `'http/protobuf'`
+Default value: `[{ 'prometheus' => { 'host' => '0.0.0.0', 'port' => 8888 } }]`
 
 ##### <a name="-otelcol--service_ensure"></a>`service_ensure`
 
@@ -609,4 +578,48 @@ Default value: `[]`
 Type for name of Otel Collector Ressources
 
 Alias of `Pattern[/\A[a-z0-9_-]+(\/[a-z0-9]+)?\z/]`
+
+### <a name="Otelcol--Telemetry_exporter"></a>`Otelcol::Telemetry_exporter`
+
+The Otelcol::Telemetry_exporter data type.
+
+Alias of `Variant[Struct[{ 'prometheus' => Otelcol::Telemetry_exporter::Pull }], Struct[{ 'otlp' => Otelcol::Telemetry_exporter::Periodic }]]`
+
+### <a name="Otelcol--Telemetry_exporter--Periodic"></a>`Otelcol::Telemetry_exporter::Periodic`
+
+The Otelcol::Telemetry_exporter::Periodic data type.
+
+Alias of `Variant[Otelcol::Telemetry_exporter::Periodic::Otlp]`
+
+### <a name="Otelcol--Telemetry_exporter--Periodic--Otlp"></a>`Otelcol::Telemetry_exporter::Periodic::Otlp`
+
+The Otelcol::Telemetry_exporter::Periodic::Otlp data type.
+
+Alias of
+
+```puppet
+Struct[{
+    endpoint => Stdlib::HTTPSUrl,
+    protocol => String
+}]
+```
+
+### <a name="Otelcol--Telemetry_exporter--Pull"></a>`Otelcol::Telemetry_exporter::Pull`
+
+The Otelcol::Telemetry_exporter::Pull data type.
+
+Alias of `Variant[Otelcol::Telemetry_exporter::Pull::Prometheus]`
+
+### <a name="Otelcol--Telemetry_exporter--Pull--Prometheus"></a>`Otelcol::Telemetry_exporter::Pull::Prometheus`
+
+The Otelcol::Telemetry_exporter::Pull::Prometheus data type.
+
+Alias of
+
+```puppet
+Struct[{
+    host => Stdlib::Host,
+    port => Stdlib::Port,
+}]
+```
 

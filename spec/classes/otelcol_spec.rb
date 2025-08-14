@@ -306,7 +306,9 @@ describe 'otelcol' do
                 },
                 'metrics' => {
                   'level' => 'basic',
-                  'address' => ':8888',
+                  'readers' => [
+                    { 'pull' => { 'exporter' => { 'prometheus' => { 'host' => '0.0.0.0', 'port' => 8888 } } } },
+                  ],
                 },
               },
             }
@@ -330,6 +332,39 @@ describe 'otelcol' do
                 'logs' => {},
                 'metrics' => {
                   'level' => 'detailed',
+                  'readers' => [
+                    { 'pull' => { 'exporter' => { 'prometheus' => { 'host' => '0.0.0.0', 'port' => 8888 } } } },
+                  ],
+                },
+              },
+            }
+          }
+        end
+
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_concat__fragment('otelcol-config-baseconfig').with_content(configcontent.to_yaml) }
+      end
+
+      context 'with multiple telemetry config' do
+        let :params do
+          {
+            telemetry_exporters: [
+              { 'prometheus' => { 'host' => '0.0.0.0', 'port' => 8888 } },
+              { 'otlp' => { 'endpoint' => 'https://example.org', 'protocol' => 'http/protobuf' } }
+            ],
+          }
+        end
+        let(:configcontent) do
+          {
+            'service' => {
+              'telemetry' => {
+                'logs' => {},
+                'metrics' => {
+                  'level' => 'basic',
+                  'readers' => [
+                    { 'pull' => { 'exporter' => { 'prometheus' => { 'host' => '0.0.0.0', 'port' => 8888 } } } },
+                    { 'periodic' => { 'exporter' => { 'otlp' => { 'endpoint' => 'https://example.org', 'protocol' => 'http/protobuf' } } } },
+                  ],
                 },
               },
             }
